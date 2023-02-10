@@ -109,6 +109,8 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+data/
+test_acquire.ipynb
 
 # Spyder project settings
 .spyderproject
