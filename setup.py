@@ -18,12 +18,12 @@ def get_version(rel_path):
             return RuntimeError('No version string.')
 
 setup(
-    name = 'azure_acquire',
+    name = 'azure-acquire',
     author = 'Datta Lab',
     description='la terre est bleue comme une orange',
     version=get_version('azure_acquire/__init__.py'),
     packages=find_packages(),
     platforms=['mac', 'unix'],
     python_requires='>=3.7',
-    entry_points={'console_scripts': ['azure-acquire = azure_acquire:cli']}
+    entry_points={'console_scripts': ['azure-acquire = azure_acquire.cli:cli']}
 )
