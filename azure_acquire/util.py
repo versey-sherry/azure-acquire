@@ -1,4 +1,12 @@
-import numpy as np, sys, time, cv2, subprocess
+import os
+import sys
+import time
+import cv2
+import json
+import subprocess
+
+import numpy as np
+from datetime import datetime
 from multiprocessing import Process, Queue
 from pyk4a import *
 
@@ -83,9 +91,24 @@ def write_images(image_queue, filename_prefix):
             break
         else:
             ir,depth = data
-            depth_pipe = write_frames(filename_prefix+'.depth.avi', depth.astype(np.uint16)[None,:,:], codec='ffv1', close_pipe=False, pipe=depth_pipe, pixel_format='gray16')
-            ir_pipe = write_frames(filename_prefix+'.ir.avi', ir.astype(np.uint16)[None,:,:], close_pipe=False, codec='ffv1', pipe=ir_pipe, pixel_format='gray16')
+            depth_pipe = write_frames(os.path.join(filename_prefix, 'depth.avi'), depth.astype(np.uint16)[None,:,:], codec='ffv1', close_pipe=False, pipe=depth_pipe, pixel_format='gray16')
+            ir_pipe = write_frames(os.path.join(filename_prefix, 'ir.avi'), ir.astype(np.uint16)[None,:,:], close_pipe=False, codec='ffv1', pipe=ir_pipe, pixel_format='gray16')
 
+# add camera related stuff here
+def write_metadata(filename_prefix, subject_name, session_name, nidaq_channels=0,
+                   nidaq_sampling_rate=0.0, depth_resolution=[640, 576], little_endian=True, 
+                   depth_data_type="UInt16[]", color_resolution=[640, 576], color_data_type="UInt16[]"):
+    
+    metadata_dict = {"SubjectName": subject_name, 'SessionName': session_name,
+                     "NidaqChannels": nidaq_channels, "NidaqSamplingRate": nidaq_sampling_rate,
+                     "DepthResolution": depth_resolution, "IsLittleEndian": little_endian,
+                     "DepthDataType": depth_data_type, "ColorResolution": color_resolution,
+                     "ColorDataType": color_data_type, "StartTime": datetime.now().strftime('%Y-%m-%dT%H:%M:%S')}
+    
+    metadata_name = os.path.join(filename_prefix, 'metadata.json')
+
+    with open(metadata_name, 'w') as output:
+        json.dump(metadata_dict, output)
             
             
 def capture_from_azure(k4a, filename_prefix, recording_length, 
@@ -137,9 +160,13 @@ def capture_from_azure(k4a, filename_prefix, recording_length,
         
     finally:
         k4a.stop()
-        system_timestamps = np.array(system_timestamps) 
-        np.save(filename_prefix+'.system_timestamps.npy',system_timestamps)
-        np.save(filename_prefix+'.device_timestamps.npy',device_timestamps)
+        system_timestamps = np.array(system_timestamps)
+        
+        # np.save(filename_prefix+'.system_timestamps.npy',system_timestamps)
+        # np.save(filename_prefix+'.device_timestamps.npy',device_timestamps)
+        
+        np.savetxt(os.path.join(filename_prefix, 'depth_ts.txt'), system_timestamps, fmt = '%f')
+        np.savetxt(os.path.join(filename_prefix, 'device_ts.txt'),device_timestamps, fmt = '%f')
         print(' - Frame rate = ',len(system_timestamps) / (system_timestamps.max()-system_timestamps.min()))
 
         image_queue.put(tuple())
@@ -153,20 +180,25 @@ def capture_from_azure(k4a, filename_prefix, recording_length,
             realtime_queue.put(tuple())
             
 
-def start_recording_RT(filename_prefix, recording_length, bottom_device_id=1, 
-                       display='top', teensy_port=None):
-    
+def start_recording_RT(base_dir, subject_name, session_name, recording_length, 
+                       bottom_device_id=0, display='top', teensy_port=None):
+    # write recording metadata
+
+    filename_prefix = os.path.join(base_dir,'session_' + datetime.now().strftime("%Y%m%d%H%M%S"))
+
+    os.makedirs(filename_prefix, exist_ok=True)
+
+    write_metadata(filename_prefix, subject_name, session_name)
+
     k4a_bottom = PyK4A(Config(color_resolution=ColorResolution.RES_720P,
                           depth_mode=DepthMode.NFOV_UNBINNED,
                           synchronized_images_only=False,
                           #wired_sync_mode=WiredSyncMode.MASTER
 		), device_id=bottom_device_id)
                      
-
     p_bottom = Process(target=capture_from_azure, 
                        args=(k4a_bottom, filename_prefix , recording_length),
                        kwargs={'display_frames': True, 'display_time':True})
-
 
     p_bottom.start()
     
