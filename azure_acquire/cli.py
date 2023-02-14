@@ -7,8 +7,8 @@ from azure_acquire.util import start_recording_RT
 
 orig_init = click.core.Option.__init__
 
-def new_init(self, *args, **kargs):
-    orig_init(self, *args,  **kargs)
+def new_init(self, *args, **kwargs):
+    orig_init(self, *args, **kwargs)
     self.show_default = True
 
 click.core.Option.__init__ = new_init
@@ -18,6 +18,18 @@ click.core.Option.__init__ = new_init
 def cli():
     pass
 
+
 @cli.command(name="record", help='start recording depth and IR video')
 @click.argument('base-dir', type=click.Path(exists=True, resolve_path=False))
-@click.option('--ses')
+@click.option('--subject-name', help='subject name of the recording')
+@click.option('--session-name', help='session name of the recording')
+@click.option('--recording-length', '-t', type=float, default = 30, help="recording time (minutes)")
+def record(base_dir, subject_name, session_name, recording_length):
+    #change recording time from minutes to seconds
+    recording_length = recording_length * 60
+
+    start_recording_RT(base_dir=base_dir, subject_name = subject_name, 
+                       session_name = session_name, recording_length = recording_length)
+
+if __name__ == '__main__':
+    cli()
