@@ -238,7 +238,8 @@ def capture_from_azure(k4a, filename_prefix, recording_length,
             
 
 def start_recording_RT(base_dir, subject_name, session_name, recording_length, 
-                       bottom_device_id=0, display='top', teensy_port=None):
+                       bottom_device_id=0, display_frames = True, display_time = True,
+                       display='top', teensy_port=None):
     """
     start recording data on Kinect Azure.
 
@@ -266,7 +267,7 @@ def start_recording_RT(base_dir, subject_name, session_name, recording_length,
                      
     p_bottom = Process(target=capture_from_azure, 
                        args=(k4a_bottom, filename_prefix , recording_length),
-                       kwargs={'display_frames': True, 'display_time':True})
+                       kwargs={'display_frames': display_frames, 'display_time':display_time})
 
     p_bottom.start()
     
