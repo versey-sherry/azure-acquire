@@ -238,8 +238,7 @@ def capture_from_azure(k4a, filename_prefix, recording_length,
             
 
 def start_recording_RT(base_dir, subject_name, session_name, recording_length, 
-                       bottom_device_id=0, display_frames = True, display_time = True,
-                       display='top', teensy_port=None):
+                       bottom_device_id=0, display_frames = True, display_time = True):
     """
     start recording data on Kinect Azure.
 
@@ -249,8 +248,6 @@ def start_recording_RT(base_dir, subject_name, session_name, recording_length,
         session_name (str): session name of the recording
         recording_length (int): recording time in seconds.
         bottom_device_id (int, optional): camera id number if there are multiple cameras. Defaults to 0.
-        display (str, optional): top or bottom camera to display the preview. Defaults to 'top'.
-        teensy_port (int, optional): port number for teensy. Defaults to None.
     """
     filename_prefix = os.path.join(base_dir,'session_' + datetime.now().strftime("%Y%m%d%H%M%S"))
 
