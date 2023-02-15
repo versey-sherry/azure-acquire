@@ -24,10 +24,8 @@ def cli():
 @click.option('--subject-name', help='subject name of the recording')
 @click.option('--session-name', help='session name of the recording')
 @click.option('--recording-length', '-t', type=float, default = 30, help="recording time (minutes)")
-@click.option('--preview', is_flag=True,
-              help='show frame preview during recording')
-@click.option('--display-time', is_flag=True,
-              help='show time during the recording')
+@click.option('--preview', default=True, type=bool, help='show frame preview during recording')
+@click.option('--display-time', default=True, type=bool, help='show time during the recording')
 def record(base_dir, subject_name, session_name, recording_length, preview, display_time):
     #change recording time from minutes to seconds
     recording_length = recording_length * 60
