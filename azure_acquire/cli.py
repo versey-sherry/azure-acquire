@@ -1,4 +1,5 @@
-"""CLI for acquiring data using Kinect Azure
+"""
+CLI for acquiring data using Kinect Azure
 """
 
 import os
@@ -17,7 +18,6 @@ click.core.Option.__init__ = new_init
 @click.version_option()
 def cli():
     pass
-
 
 @cli.command(name="record", help='start recording depth and IR video')
 @click.argument('base-dir', type=click.Path(exists=True, resolve_path=False))

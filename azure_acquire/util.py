@@ -12,6 +12,12 @@ from pyk4a import *
 
 
 def display_images(display_queue):
+    """
+    display captured images
+
+    Args:
+        display_queue (multiprocessing.queues.Queque): the data stream from the camera to be displayed
+    """
     while True: 
         data = display_queue.get() 
         if len(data)==0: 
@@ -36,8 +42,26 @@ def write_frames(filename, frames, threads=6, fps=30, crf=10,
                  pipe=None, slices=24, slicecrc=1, frame_size=None, get_cmd=False):
     """
     Write frames to avi file using the ffv1 lossless encoder
-    """
 
+    Args:
+        filename (str): path to the file to write the frames to.
+        frames (numpy.ndarray): frames to write to file
+        threads (int, optional): the number of threads for multiprocessing. Defaults to 6.
+        fps (int, optional): camera frame rate. Defaults to 30.
+        crf (int, optional): constant rate factor for ffmpeg, a lower value leads to higher quality. Defaults to 10.
+        pixel_format (str, optional): pixel format for ffmpeg. Defaults to 'gray8'.
+        codec (str, optional): codec option for ffmpeg. Defaults to 'h264'.
+        close_pipe (bool, optional): boolean flag for closing ffmpeg pipe. Defaults to True.
+        pipe (subprocess.pipe, optional): ffmpeg pipe for writing the video. Defaults to None.
+        slices (int, optional): number of slicing in parallel encoding. Defaults to 24.
+        slicecrc (int, optional): protect slices with cyclic redundency check. Defaults to 1.
+        frame_size (str, optional): size of the frame, ie 640x576. Defaults to None.
+        get_cmd (bool, optional): boolean flag for outputtting ffmpeg command. Defaults to False.
+
+    Returns:
+        pipe (subprocess.pipe, optional): ffmpeg pipe for writing the video.
+    """
+ 
     # we probably want to include a warning about multiples of 32 for videos
     # (then we can use pyav and some speedier tools)
 
@@ -80,6 +104,13 @@ def write_frames(filename, frames, threads=6, fps=30, crf=10,
 
 
 def write_images(image_queue, filename_prefix):
+    """
+    start writing the images to videos
+
+    Args:
+        image_queue (Subprocess.queues.Queue): data stream from the camera
+        filename_prefix (str): base directory where the videos are saved
+    """
     depth_pipe = None
     ir_pipe = None 
     
@@ -98,7 +129,23 @@ def write_images(image_queue, filename_prefix):
 def write_metadata(filename_prefix, subject_name, session_name, nidaq_channels=0,
                    nidaq_sampling_rate=0.0, depth_resolution=[640, 576], little_endian=True, 
                    depth_data_type="UInt16[]", color_resolution=[640, 576], color_data_type="UInt16[]"):
+    """
+    write recording metadata as json file.
+
+    Args:
+        filename_prefix (str): session directory to save recording metadata file in
+        subject_name (str): subject name of the recording
+        session_name (str): session name of the recording
+        nidaq_channels (int, optional): number of nidaq channels. Defaults to 0.
+        nidaq_sampling_rate (float, optional): nidaq sampling rate. Defaults to 0.0.
+        depth_resolution (list, optional): frame resolution of depth videos. Defaults to [640, 576].
+        little_endian (bool, optional): boolean flag that indicates if depth data is little endian. Defaults to True.
+        depth_data_type (str, optional): data type of depth data. Defaults to "UInt16[]".
+        color_resolution (list, optional): frame resolution of ir video. Defaults to [640, 576].
+        color_data_type (str, optional): data type of ir video. Defaults to "UInt16[]".
+    """
     
+    # construct metadata dictionary
     metadata_dict = {"SubjectName": subject_name, 'SessionName': session_name,
                      "NidaqChannels": nidaq_channels, "NidaqSamplingRate": nidaq_sampling_rate,
                      "DepthResolution": depth_resolution, "IsLittleEndian": little_endian,
@@ -114,7 +161,17 @@ def write_metadata(filename_prefix, subject_name, session_name, nidaq_channels=0
 def capture_from_azure(k4a, filename_prefix, recording_length, 
                        display_frames=False, display_time=False, 
                        realtime_queue=None):
-    
+    """
+    Capture depth and color videos from Kinect Azure
+
+    Args:
+        k4a (PY4KA object): camera control object.
+        filename_prefix (str): session directory where the videos are saved
+        recording_length (int): recording time in seconds.
+        display_frames (bool, optional): boolean flag that indicates whether to display the preview video. Defaults to False.
+        display_time (bool, optional): boolean flag that indicates whether to display time. Defaults to False.
+        realtime_queue (_type_, optional): _description_. Defaults to None.
+    """
     camera_name = filename_prefix.split('.')[-1]
     image_queue = Queue()
     write_process = Process(target=write_images, args=(image_queue, filename_prefix))
@@ -182,12 +239,23 @@ def capture_from_azure(k4a, filename_prefix, recording_length,
 
 def start_recording_RT(base_dir, subject_name, session_name, recording_length, 
                        bottom_device_id=0, display='top', teensy_port=None):
-    # write recording metadata
+    """
+    start recording data on Kinect Azure.
 
+    Args:
+        base_dir (str): project base directory to save all videos
+        subject_name (str): subject name of the recording
+        session_name (str): session name of the recording
+        recording_length (int): recording time in seconds.
+        bottom_device_id (int, optional): camera id number if there are multiple cameras. Defaults to 0.
+        display (str, optional): top or bottom camera to display the preview. Defaults to 'top'.
+        teensy_port (int, optional): port number for teensy. Defaults to None.
+    """
     filename_prefix = os.path.join(base_dir,'session_' + datetime.now().strftime("%Y%m%d%H%M%S"))
 
     os.makedirs(filename_prefix, exist_ok=True)
-
+    
+    # write recording metadata
     write_metadata(filename_prefix, subject_name, session_name)
 
     k4a_bottom = PyK4A(Config(color_resolution=ColorResolution.RES_720P,
@@ -205,6 +273,14 @@ def start_recording_RT(base_dir, subject_name, session_name, recording_length,
     
     
 def save_camera_params(prefix, bottom_device_id=0, top_device_id=1):
+    """
+    save parameters for the cameras.
+
+    Args:
+        prefix (str): session directory where the recorded data is saved.
+        bottom_device_id (int, optional): camera id number for bottom camera if there are multiple cameras. Defaults to 0.
+        top_device_id (int, optional): camera id number for top camera if there are multiple cameras. Defaults to 1.
+    """
     k4a_bottom = PyK4A(Config(color_resolution=ColorResolution.RES_720P,
                               depth_mode=DepthMode.NFOV_UNBINNED,
                               synchronized_images_only=False,
