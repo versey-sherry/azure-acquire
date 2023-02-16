@@ -252,7 +252,7 @@ def capture_from_azure(k4a, filename_prefix, recording_length,
             realtime_queue.put(tuple())      
 
 def start_recording_RT(base_dir, subject_name, session_name, recording_length, 
-                       device_id=0, display_frames = True, display_time = True):
+                       serial_number=None, display_frames = True, display_time = True):
     """
     start recording data on Kinect Azure.
 
@@ -269,6 +269,14 @@ def start_recording_RT(base_dir, subject_name, session_name, recording_length,
     
     # write recording metadata
     write_metadata(filename_prefix, subject_name, session_name)
+
+    # find device id
+    if serial_number is not None:
+        # find serial number when it is not None
+        device_id = find_device(serial_number=serial_number)
+    else:
+        # assume there is only one device when there is no serial number input
+        device_id = 0
 
     k4a_bottom = PyK4A(Config(color_resolution=ColorResolution.RES_720P,
                           depth_mode=DepthMode.NFOV_UNBINNED,
