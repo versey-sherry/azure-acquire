@@ -225,6 +225,7 @@ def capture_from_azure(k4a, filename_prefix, recording_length,
 
             if display_time and count % 15 == 0: 
                 sys.stdout.write('\rRecorded '+repr(int(time.time()-start_time))+' out of '+repr(recording_length)+' seconds')
+                sys.stdout.write('\rCurrent Frame rate '+repr(round(len(system_timestamps) / (system_timestamps.max()-system_timestamps.min()), 2))+' fps')
             count += 1
             
     except OSError:
@@ -239,7 +240,7 @@ def capture_from_azure(k4a, filename_prefix, recording_length,
         
         np.savetxt(os.path.join(filename_prefix, 'depth_ts.txt'), system_timestamps, fmt = '%f')
         np.savetxt(os.path.join(filename_prefix, 'device_ts.txt'),device_timestamps, fmt = '%f')
-        print(' - Frame rate = ',len(system_timestamps) / (system_timestamps.max()-system_timestamps.min()))
+        print(' - Session Average Frame rate = ', round(len(system_timestamps) / (system_timestamps.max()-system_timestamps.min()), 2), 'fps')
 
         image_queue.put(tuple())
         write_process.join()
