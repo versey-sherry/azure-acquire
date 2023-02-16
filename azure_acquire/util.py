@@ -149,9 +149,8 @@ def write_images(image_queue, filename_prefix):
             ir_pipe = write_frames(os.path.join(filename_prefix, 'ir.avi'), ir.astype(np.uint16)[None,:,:], close_pipe=False, codec='ffv1', pipe=ir_pipe, pixel_format='gray16')
 
 # add camera related stuff here
-def write_metadata(filename_prefix, subject_name, session_name, nidaq_channels=0,
-                   nidaq_sampling_rate=0.0, depth_resolution=[640, 576], little_endian=True, 
-                   depth_data_type="UInt16[]", color_resolution=[640, 576], color_data_type="UInt16[]"):
+def write_metadata(filename_prefix, subject_name, session_name, 
+                   depth_resolution=[640, 576], little_endian=True, color_resolution=[640, 576]):
     """
     write recording metadata as json file.
 
@@ -159,21 +158,15 @@ def write_metadata(filename_prefix, subject_name, session_name, nidaq_channels=0
         filename_prefix (str): session directory to save recording metadata file in
         subject_name (str): subject name of the recording
         session_name (str): session name of the recording
-        nidaq_channels (int, optional): number of nidaq channels. Defaults to 0.
-        nidaq_sampling_rate (float, optional): nidaq sampling rate. Defaults to 0.0.
         depth_resolution (list, optional): frame resolution of depth videos. Defaults to [640, 576].
         little_endian (bool, optional): boolean flag that indicates if depth data is little endian. Defaults to True.
-        depth_data_type (str, optional): data type of depth data. Defaults to "UInt16[]".
         color_resolution (list, optional): frame resolution of ir video. Defaults to [640, 576].
-        color_data_type (str, optional): data type of ir video. Defaults to "UInt16[]".
     """
     
     # construct metadata dictionary
     metadata_dict = {"SubjectName": subject_name, 'SessionName': session_name,
-                     "NidaqChannels": nidaq_channels, "NidaqSamplingRate": nidaq_sampling_rate,
                      "DepthResolution": depth_resolution, "IsLittleEndian": little_endian,
-                     "DepthDataType": depth_data_type, "ColorResolution": color_resolution,
-                     "ColorDataType": color_data_type, "StartTime": datetime.now().strftime('%Y-%m-%dT%H:%M:%S')}
+                     "ColorResolution": color_resolution, "StartTime": datetime.now().strftime('%Y-%m-%dT%H:%M:%S')}
     
     metadata_name = os.path.join(filename_prefix, 'metadata.json')
 
