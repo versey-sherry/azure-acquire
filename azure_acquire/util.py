@@ -223,9 +223,11 @@ def capture_from_azure(k4a, filename_prefix, recording_length,
             if realtime_queue is not None and count%3==0:
                 realtime_queue.put((ir,camera_name))
 
-            if display_time and count % 15 == 0: 
-                sys.stdout.write('\rRecorded '+repr(int(time.time()-start_time))+' out of '+repr(recording_length)+' seconds')
-                sys.stdout.write('\rCurrent Frame rate '+repr(round(len(system_timestamps) / (system_timestamps.max()-system_timestamps.min()), 2))+' fps')
+            if count > 0:
+                if display_time and count % 15: 
+                    # sys.stdout.write('\rRecorded '+repr(int(time.time()-start_time))+' out of '+repr(recording_length)+' seconds')
+                    sys.stdout.write('\rRecorded '+repr(int(time.time()-start_time))+' out of '+repr(recording_length)+' seconds '+
+                                    '- Current Frame rate '+ str(round(len(system_timestamps) / (max(system_timestamps)-min(system_timestamps)), 2))+' fps')
             count += 1
             
     except OSError:
