@@ -12,6 +12,18 @@ from pyk4a import *
 
 
 def find_device(serial_number):
+    """
+    find device id from serial number
+
+    Args:
+        serial_number (str): device serial number found in k4aviewer
+
+    Raises:
+        ValueError: no device with the serial number found
+
+    Returns:
+        device_id (int): the id of the device  
+    """
     for device_id in range(connected_device_count()):
         try:
             device = PyK4A(device_id=device_id)
@@ -20,7 +32,6 @@ def find_device(serial_number):
             device.close()
             if dev_serial == str(serial_number):
                 return device_id
-
         except:
             continue
     raise ValueError(f'Device serial number {serial_number} not found')
