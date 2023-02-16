@@ -27,6 +27,19 @@ def record(base_dir, subject_name, session_name, recording_length, serial_number
     #change recording time from minutes to seconds
     recording_length = recording_length * 60
 
+    # prompt user to input session metadata
+    if base_dir is None:
+        base_dir=input('Input project base directory: ')
+    if subject_name is None:
+        subject_name=input('Input subject name of the recording: ')
+    if session_name is None:
+        session_name=input('Input session name of the recording: ')
+
+    # prompt users to input serial number when there are multiple devices
+    from pyk4a import connected_device_count
+    if connected_device_count() > 1:
+        serial_number=input('Input the serial number of the recording device: ')
+
     start_recording_RT(base_dir=base_dir, subject_name = subject_name, session_name = session_name, 
                        recording_length = recording_length, serial_number=serial_number,
                        display_frames = preview, display_time = display_time)
