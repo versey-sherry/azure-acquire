@@ -11,6 +11,20 @@ from multiprocessing import Process, Queue
 from pyk4a import *
 
 
+def find_device(serial_number):
+    for device_id in range(connected_device_count()):
+        try:
+            device = PyK4A(device_id=device_id)
+            device.open()
+            dev_serial = device.serial
+            device.close()
+            if dev_serial == str(serial_number):
+                return device_id
+
+        except:
+            continue
+    raise ValueError(f'Device serial number {serial_number} not found')
+
 def display_images(display_queue):
     """
     display captured images
@@ -35,7 +49,6 @@ def display_images(display_queue):
         while True:
             try: display_queue.get_nowait()
             except: break
-
 
 def write_frames(filename, frames, threads=6, fps=30, crf=10,
                  pixel_format='gray8', codec='h264', close_pipe=True,
@@ -102,7 +115,6 @@ def write_frames(filename, frames, threads=6, fps=30, crf=10,
     else:
         return pipe
 
-
 def write_images(image_queue, filename_prefix):
     """
     start writing the images to videos
@@ -156,7 +168,6 @@ def write_metadata(filename_prefix, subject_name, session_name, nidaq_channels=0
 
     with open(metadata_name, 'w') as output:
         json.dump(metadata_dict, output)
-            
             
 def capture_from_azure(k4a, filename_prefix, recording_length, 
                        display_frames=False, display_time=False, 
@@ -234,8 +245,7 @@ def capture_from_azure(k4a, filename_prefix, recording_length,
             display_process.join()
             
         if realtime_queue is not None:
-            realtime_queue.put(tuple())
-            
+            realtime_queue.put(tuple())      
 
 def start_recording_RT(base_dir, subject_name, session_name, recording_length, 
                        bottom_device_id=0, display_frames = True, display_time = True):
@@ -267,8 +277,7 @@ def start_recording_RT(base_dir, subject_name, session_name, recording_length,
                        kwargs={'display_frames': display_frames, 'display_time':display_time})
 
     p_bottom.start()
-    
-    
+   
     
 def save_camera_params(prefix, bottom_device_id=0, top_device_id=1):
     """
