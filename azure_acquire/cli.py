@@ -14,12 +14,8 @@ def new_init(self, *args, **kwargs):
 
 click.core.Option.__init__ = new_init
 
-@click.group()
 @click.version_option()
-def cli():
-    pass
-
-@cli.command(name="record", help='start recording depth and IR video')
+@click.command(help='start recording depth and IR video')
 @click.argument('base-dir', type=click.Path(exists=True, resolve_path=False))
 @click.option('--subject-name', help='subject name of the recording')
 @click.option('--session-name', help='session name of the recording')
@@ -33,6 +29,3 @@ def record(base_dir, subject_name, session_name, recording_length, preview, disp
     start_recording_RT(base_dir=base_dir, subject_name = subject_name, 
                        session_name = session_name, recording_length = recording_length, 
                        display_frames = preview, display_time = display_time)
-
-if __name__ == '__main__':
-    cli()

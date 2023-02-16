@@ -25,5 +25,5 @@ setup(
     packages=find_packages(),
     platforms=['mac', 'unix'],
     python_requires='>=3.7',
-    entry_points={'console_scripts': ['azure-acquire = azure_acquire.cli:cli']}
+    entry_points={'console_scripts': ['azure-acquire = azure_acquire.cli:record']}
 )
