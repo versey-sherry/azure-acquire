@@ -16,7 +16,7 @@ click.core.Option.__init__ = new_init
 
 @click.version_option()
 @click.command(help='start recording depth and IR video')
-@click.argument('base-dir', type=click.Path(exists=True, resolve_path=False))
+@click.argument('base-dir', type=click.Path(exists=True, resolve_path=False), default=os.getcwd())
 @click.option('--subject-name', help='subject name of the recording')
 @click.option('--session-name', help='session name of the recording')
 @click.option('--recording-length', '-t', type=float, default = 30, help="recording time (minutes)")
@@ -28,8 +28,6 @@ def record(base_dir, subject_name, session_name, recording_length, serial_number
     recording_length = recording_length * 60
 
     # prompt user to input session metadata
-    if base_dir is None:
-        base_dir=input('Input project base directory: ')
     if subject_name is None:
         subject_name=input('Input subject name of the recording: ')
     if session_name is None:
