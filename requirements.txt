@@ -15,3 +15,5 @@ matplotlib
 jupyter
 pathlib2
 tqdm
+pyk4a
+jupyter
