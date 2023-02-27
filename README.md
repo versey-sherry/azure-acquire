@@ -126,7 +126,7 @@ pip install -r requirements.txt
 ```
 Install this package by running:
 ```
-pip install setup.py
+pip install .
 ```
 
 Once you have finished setting up the environment, you should be able to verify the installation by running:
