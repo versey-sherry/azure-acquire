@@ -114,7 +114,7 @@ Please make sure you are in `azure-qcquire` directory for the following steps.
 
 Create a conda environment called `azure-acquire` with `python 3.8` by running:
 ```
-conda create -n azure-acquire python-3.8
+conda create -n azure-acquire python=3.8
 ```
 Activate the eonvironment by running:
 ```
@@ -122,7 +122,7 @@ conda activate azure-acquire
 ```
 Install the relevant package by running:
 ```
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 Install this package by running:
 ```
