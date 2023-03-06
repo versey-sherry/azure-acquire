@@ -2,7 +2,7 @@
 Acquiring MoSeq data using Kinect Azure. This package is a simple CLI tool that facilitates acquiring data using Kinect Azure on an Ubuntu machine.
 
 # Installation
-Currently Ubuntu 18.04 is the only supported distribution listed in the [official installation instruction](https://learn.microsoft.com/en-us/azure/kinect-dk/sensor-sdk-download#linux-installation-instructions).
+Currently Ubuntu 18.04 is the only supported distribution listed in the [official installation instruction](https://learn.microsoft.com/en-us/azure/kinect-dk/sensor-sdk-download#linux-installation-instructions). **Please decline when prompted to upgrade to other versions of Ubuntu.**
 
 ## Step 1: Install `curl`
 `curl` is used to download necessary files in the installation process. You can skip this step is `curl` is already installed.
@@ -17,6 +17,7 @@ If you have `curl`, it should print out a path like `/usr/bin/curl` and you can 
 sudo apt update
 sudo apt upgrade
 sudo apt install curl
+sudo apt install build-essential
 ```
 
 ## Step 2: Configure Microsoft's package repository
@@ -31,7 +32,6 @@ Find more information at the [official instruction](https://learn.microsoft.com/
 Install the Kinect Azure packages to control the Kinect Azure camera. The `k4a-tools` include [Azure Kinect viewer](https://learn.microsoft.com/en-us/azure/kinect-dk/azure-kinect-viewer), [Azure Kinect recorder](https://learn.microsoft.com/en-us/azure/kinect-dk/azure-kinect-recorder), and [Azure Kince firmware tool](https://learn.microsoft.com/en-us/azure/kinect-dk/azure-kinect-firmware-tool).
 
 ```
-sudo apt-get update
 sudo apt install libk4a1.3-dev
 sudo apt install libk4abt1.0-dev
 sudo apt install k4a-tools=1.3.0
@@ -72,8 +72,6 @@ which git
 ```
 If you have `git`, it should print out a path like `/usr/bin/git` and you can go to the next step. Otherwise, you will see `git not found` and will need to install `git` by running the following commands:
 ```bash
-sudo apt update
-sudo apt upgrade
 sudo apt install git
 ```
 
