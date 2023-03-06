@@ -102,7 +102,7 @@ We recommend that you say **yes** when the installation prompt asks if you want 
 # Step 9: Clone (download) the `azure-acquire` repository
 Clone `azure-acquire` repository from GitHub by running:
 ```bash
-git clone -b https://github.com/versey-sherry/azure-acquire.git
+git clone https://github.com/versey-sherry/azure-acquire.git
 ```
 Navigate to the `azure-acquire` directory by running:
 ```bash
