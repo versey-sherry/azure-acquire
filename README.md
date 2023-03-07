@@ -130,7 +130,7 @@ pip install .
 
 Once you have finished setting up the environment, you should be able to verify the installation by running:
 ```
-azuire-acquire --version
+azure-acquire --version
 ```
 
 # Acquiring data
