@@ -18,13 +18,14 @@ sudo apt update
 sudo apt upgrade
 sudo apt install curl
 sudo apt install build-essential
+sudo apt install ffmpeg
 ```
 
 ## Step 2: Configure Microsoft's package repository
 ```
+sudo apt-get update
 curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
 sudo apt-add-repository https://packages.microsoft.com/ubuntu/18.04/prod
-sudo apt-get update
 ```
 Find more information at the [official instruction](https://learn.microsoft.com/en-us/windows-server/administration/linux-package-repository-for-microsoft-software).
 
