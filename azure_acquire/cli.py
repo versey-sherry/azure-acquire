@@ -21,6 +21,7 @@ click.core.Option.__init__ = new_init
 @click.option('--session-name', help='session name of the recording')
 @click.option('--recording-length', '-t', type=float, default = 30, help="recording time (minutes)")
 @click.option('--serial-number', '-sn', type=str, help='device serial number')
+@click.option('--save-ir', default=True, type=bool, help='save IR video')
 @click.option('--preview', default=True, type=bool, help='show frame preview during recording')
 @click.option('--display-time', default=True, type=bool, help='show time during the recording')
 def record(base_dir, subject_name, session_name, recording_length, serial_number, preview, display_time):
@@ -41,5 +42,5 @@ def record(base_dir, subject_name, session_name, recording_length, serial_number
         serial_number=input('Input the serial number of the recording device: ')
 
     start_recording_RT(base_dir=base_dir, subject_name = subject_name, session_name = session_name, 
-                       recording_length = recording_length, serial_number=serial_number,
+                       recording_length = recording_length, serial_number=serial_number, save_ir = save_ir,
                        display_frames = preview, display_time = display_time)

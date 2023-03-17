@@ -126,7 +126,7 @@ def write_frames(filename, frames, threads=6, fps=30, crf=10,
     else:
         return pipe
 
-def write_images(image_queue, filename_prefix):
+def write_images(image_queue, filename_prefix, save_ir=True):
     """
     start writing the images to videos
 
@@ -146,7 +146,8 @@ def write_images(image_queue, filename_prefix):
         else:
             ir,depth = data
             depth_pipe = write_frames(os.path.join(filename_prefix, 'depth.avi'), depth.astype(np.uint16)[None,:,:], codec='ffv1', close_pipe=False, pipe=depth_pipe, pixel_format='gray16')
-            ir_pipe = write_frames(os.path.join(filename_prefix, 'ir.avi'), ir.astype(np.uint16)[None,:,:], close_pipe=False, codec='ffv1', pipe=ir_pipe, pixel_format='gray16')
+            if save_ir:
+                ir_pipe = write_frames(os.path.join(filename_prefix, 'ir.avi'), ir.astype(np.uint16)[None,:,:], close_pipe=False, codec='ffv1', pipe=ir_pipe, pixel_format='gray16')
 
 # add camera related stuff here
 def write_metadata(filename_prefix, subject_name, session_name, 
@@ -173,7 +174,7 @@ def write_metadata(filename_prefix, subject_name, session_name,
     with open(metadata_name, 'w') as output:
         json.dump(metadata_dict, output)
             
-def capture_from_azure(k4a, filename_prefix, recording_length, 
+def capture_from_azure(k4a, filename_prefix, recording_length, save_ir=False,
                        display_frames=False, display_time=False, 
                        realtime_queue=None):
     """
@@ -189,7 +190,7 @@ def capture_from_azure(k4a, filename_prefix, recording_length,
     """
     camera_name = filename_prefix.split('.')[-1]
     image_queue = Queue()
-    write_process = Process(target=write_images, args=(image_queue, filename_prefix))
+    write_process = Process(target=write_images, args=(image_queue, filename_prefix), kwargs={'save_ir': save_ir})
     write_process.start()
     
     if display_frames: 
@@ -255,7 +256,7 @@ def capture_from_azure(k4a, filename_prefix, recording_length,
             realtime_queue.put(tuple())      
 
 def start_recording_RT(base_dir, subject_name, session_name, recording_length, 
-                       serial_number=None, display_frames = True, display_time = True):
+                       serial_number=None, save_ir = False, display_frames = True, display_time = True):
     """
     start recording data on Kinect Azure.
 
@@ -289,7 +290,7 @@ def start_recording_RT(base_dir, subject_name, session_name, recording_length,
                      
     p_bottom = Process(target=capture_from_azure, 
                        args=(k4a_bottom, filename_prefix , recording_length),
-                       kwargs={'display_frames': display_frames, 'display_time':display_time})
+                       kwargs={'save_ir': save_ir, 'display_frames': display_frames, 'display_time':display_time})
 
     p_bottom.start()
    
