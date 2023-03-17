@@ -24,7 +24,7 @@ click.core.Option.__init__ = new_init
 @click.option('--save-ir', default=True, type=bool, help='save IR video')
 @click.option('--preview', default=True, type=bool, help='show frame preview during recording')
 @click.option('--display-time', default=True, type=bool, help='show time during the recording')
-def record(base_dir, subject_name, session_name, recording_length, serial_number, preview, display_time):
+def record(base_dir, subject_name, session_name, save_ir, recording_length, serial_number, preview, display_time):
     # make base_dir if it doesn't exist
     os.makedirs(base_dir, exist_ok=True)
     #change recording time from minutes to seconds
