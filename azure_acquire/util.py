@@ -135,13 +135,15 @@ def write_images(image_queue, filename_prefix, save_ir=True):
         filename_prefix (str): base directory where the videos are saved
     """
     depth_pipe = None
-    ir_pipe = None 
+    if save_ir:
+        ir_pipe = None 
     
     while True: 
         data = image_queue.get() 
         if len(data)==0: 
             depth_pipe.stdin.close()
-            ir_pipe.stdin.close()
+            if save_ir:
+                ir_pipe.stdin.close()
             break
         else:
             ir,depth = data
@@ -174,7 +176,7 @@ def write_metadata(filename_prefix, subject_name, session_name,
     with open(metadata_name, 'w') as output:
         json.dump(metadata_dict, output)
             
-def capture_from_azure(k4a, filename_prefix, recording_length, save_ir=False,
+def capture_from_azure(k4a, filename_prefix, recording_length, save_ir=True,
                        display_frames=False, display_time=False, 
                        realtime_queue=None):
     """
@@ -256,7 +258,7 @@ def capture_from_azure(k4a, filename_prefix, recording_length, save_ir=False,
             realtime_queue.put(tuple())      
 
 def start_recording_RT(base_dir, subject_name, session_name, recording_length, 
-                       serial_number=None, save_ir = False, display_frames = True, display_time = True):
+                       serial_number=None, save_ir = True, display_frames = True, display_time = True):
     """
     start recording data on Kinect Azure.
 
